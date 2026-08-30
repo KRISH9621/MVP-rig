@@ -1,0 +1,458 @@
+[
+  {
+    "char": "char1",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.0219819224268792
+  },
+  {
+    "char": "char10",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.022268304343798215
+  },
+  {
+    "char": "char11",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.0233081079691501
+  },
+  {
+    "char": "char12",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.015069186971684972
+  },
+  {
+    "char": "char13",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.017330031244412344
+  },
+  {
+    "char": "char15",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.012554775162962445
+  },
+  {
+    "char": "char16",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.022200472019783004
+  },
+  {
+    "char": "char17",
+    "verdict": "FIXABLE by identity+recenter",
+    "score": 1.0,
+    "surf_dist": 0.03502664124091918
+  },
+  {
+    "char": "char18",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02012947029464416
+  },
+  {
+    "char": "char19",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02878976000105456
+  },
+  {
+    "char": "char2",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.05399007438551879
+  },
+  {
+    "char": "char20",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.022427603305796295
+  },
+  {
+    "char": "char21",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.017805344319665177
+  },
+  {
+    "char": "char22",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.013735828279396511
+  },
+  {
+    "char": "char23",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.014946168345762434
+  },
+  {
+    "char": "char25",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.019993128285692434
+  },
+  {
+    "char": "char26",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.014453015784845544
+  },
+  {
+    "char": "char27",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.01759046743264471
+  },
+  {
+    "char": "char28",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.021131057774513174
+  },
+  {
+    "char": "char29",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.015555268327891668
+  },
+  {
+    "char": "char3",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.01798370580305096
+  },
+  {
+    "char": "char30",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.0201880948234207
+  },
+  {
+    "char": "char31",
+    "verdict": "FIXABLE by identity+recenter",
+    "score": 1.0,
+    "surf_dist": 0.03450577812154431
+  },
+  {
+    "char": "char32",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02846247463144052
+  },
+  {
+    "char": "char33",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02488335391501034
+  },
+  {
+    "char": "char34",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02258903750035229
+  },
+  {
+    "char": "char35",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.01925947335681854
+  },
+  {
+    "char": "char36",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.025131084684798372
+  },
+  {
+    "char": "char37",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.025670611566943488
+  },
+  {
+    "char": "char38",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.026023595753696768
+  },
+  {
+    "char": "char4",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.016936004346744284
+  },
+  {
+    "char": "char40",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02582547918323632
+  },
+  {
+    "char": "char42",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.015946933420506085
+  },
+  {
+    "char": "char43",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.021379811692119673
+  },
+  {
+    "char": "char44",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.015735093266442512
+  },
+  {
+    "char": "char45",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.015366409962643851
+  },
+  {
+    "char": "char46",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.021895724220938932
+  },
+  {
+    "char": "char49",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.026093154113923073
+  },
+  {
+    "char": "char5",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02279980481032351
+  },
+  {
+    "char": "char50",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.018537294829292932
+  },
+  {
+    "char": "char53",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.018977018919809262
+  },
+  {
+    "char": "char55",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.03132236331538427
+  },
+  {
+    "char": "char56",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.024533079773684758
+  },
+  {
+    "char": "char58",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.04765811158036188
+  },
+  {
+    "char": "char59",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.04934805670411371
+  },
+  {
+    "char": "char6",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.01622153843286848
+  },
+  {
+    "char": "char61",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.021490621083277043
+  },
+  {
+    "char": "char62",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.019585386714278286
+  },
+  {
+    "char": "char63",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.019900916022193658
+  },
+  {
+    "char": "char64",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.03960288788006532
+  },
+  {
+    "char": "char66",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.03165936597113303
+  },
+  {
+    "char": "char67",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.050382476833705114
+  },
+  {
+    "char": "char68",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02999420308229236
+  },
+  {
+    "char": "char69",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.050262680008231336
+  },
+  {
+    "char": "char7",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.018783172572207053
+  },
+  {
+    "char": "char71",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02095165038854075
+  },
+  {
+    "char": "char72",
+    "verdict": "FIXABLE by identity+recenter+rescale",
+    "score": 1.0,
+    "surf_dist": 0.044222377755102626
+  },
+  {
+    "char": "char73",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.022728573644710776
+  },
+  {
+    "char": "char75",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.011144355464928002
+  },
+  {
+    "char": "char76",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.016097279195262427
+  },
+  {
+    "char": "char77",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.04084786393088389
+  },
+  {
+    "char": "char78",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.05159412523364865
+  },
+  {
+    "char": "char79",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.013670775597881012
+  },
+  {
+    "char": "char81",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.02004436591106437
+  },
+  {
+    "char": "char82",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.05466044631289966
+  },
+  {
+    "char": "char83",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.018315548839457515
+  },
+  {
+    "char": "char84",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.04611098757765491
+  },
+  {
+    "char": "char85",
+    "verdict": "FIXABLE by identity+recenter+rescale",
+    "score": 1.0,
+    "surf_dist": 0.16811144229956268
+  },
+  {
+    "char": "char86",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.04031612464854634
+  },
+  {
+    "char": "char87",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.05257003250428032
+  },
+  {
+    "char": "char88",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.013534608725363913
+  },
+  {
+    "char": "char89",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.0393528224149302
+  },
+  {
+    "char": "char9",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.016934732992378566
+  },
+  {
+    "char": "char90",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.018498798898360227
+  },
+  {
+    "char": "char91",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.03755599069510198
+  },
+  {
+    "char": "char92",
+    "verdict": "OK (already correct)",
+    "score": 1.0,
+    "surf_dist": 0.05002440640190119
+  }
+]

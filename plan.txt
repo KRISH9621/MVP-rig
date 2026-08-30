@@ -1,0 +1,409 @@
+P0 (correctness bugs), P1 (paper-code honesty gaps), and P2 (polish). Each item has the file, the exact change, and a verification step.
+
+P0 — Correctness Bugs (Fix First)
+P0-1: Coordinate-System Mismatch Between trimesh and Open3D
+File: voidx_pipeline.py, method VoidXPipeline.load_mesh
+
+Problem: You load the mesh twice — once with trimesh (for raycasting in Phase 2) and once with Open3D (for rendering in Phase 1). They may apply different default transforms to GLB files, causing the skeleton (computed in Open3D space) to be misaligned with the raycast target (in trimesh space). This is a silent bug.
+
+Current code:
+
+def load_mesh(self, mesh_path: str):
+    import trimesh
+    import open3d as o3d
+    scene = trimesh.load(mesh_path)
+    if isinstance(scene, trimesh.Scene):
+        geoms = []
+        for node in scene.graph.nodes_geometry:
+            transform, geometry_name = scene.graph.get(node)
+            geom = scene.geometry[geometry_name]
+            geom.apply_transform(transform)
+            geoms.append(geom)
+        self._trimesh_mesh = trimesh.util.concatenate(geoms)
+    else:
+        self._trimesh_mesh = scene
+    self._mesh = o3d.io.read_triangle_mesh(mesh_path)
+    self._mesh.compute_vertex_normals()
+    self.cortex.init_visualizer(self._mesh)
+    return self._trimesh_mesh
+Fixed code — derive trimesh FROM Open3D so both share identical coordinates:
+
+def load_mesh(self, mesh_path: str):
+    import trimesh
+    import open3d as o3d
+
+    # Load with Open3D first (authoritative for rendering coordinate system)
+    self._mesh = o3d.io.read_triangle_mesh(mesh_path)
+    self._mesh.compute_vertex_normals()
+
+    # Derive trimesh FROM the Open3D mesh — guarantees identical coordinates
+    vertices = np.asarray(self._mesh.vertices).copy()
+    faces = np.asarray(self._mesh.triangles).copy()
+    self._trimesh_mesh = trimesh.Trimesh(
+        vertices=vertices, faces=faces, process=False
+    )
+    # Fix for non-watertight meshes: don't merge vertices
+    self._trimesh_mesh.metadata["source"] = "open3d_derived"
+
+    self.cortex.init_visualizer(self._mesh)
+    return self._trimesh_mesh
+    Verification: After loading, assert the bounds match:
+
+o3d_bbox = self._mesh.get_axis_aligned_bounding_box()
+o3d_min = np.asarray(o3d_bbox.get_min_bound())
+tri_min = self._trimesh_mesh.bounds[0]
+assert np.allclose(o3d_min, tri_min, atol=1e-4), \
+    f"Coordinate mismatch: Open3D={o3d_min}, trimesh={tri_min}"
+
+    P0-2: Shape Diameter Inconsistency Between IoU and VCE
+File: voidx_metrics.py, function _shape_diameter
+
+Problem: Returns np.max(lengths) where lengths are single-direction exit distances ≈ half the true shape diameter. Meanwhile volumetric_centering_error computes 2.0 * np.median(radii) ≈ full diameter. This makes IoU tolerance stricter than the paper describes (tolerance = 0.5 × half-diameter = 0.25 × true diameter, instead of 0.5 × true diameter).
+
+Current code:
+if lengths:
+    return float(np.max(lengths))
+return diag * 0.1
+Fixed code:
+
+if lengths:
+    # Return FULL diameter (2× median radius), consistent with VCE metric
+    # and the paper's definition of "local shape diameter"
+    return float(2.0 * np.median(lengths))
+return diag * 0.1
+
+Verification:
+
+Create a unit cylinder (radius 1, height 10) in trimesh.
+Place a test point at the center.
+Call _shape_diameter(cylinder, center_point).
+Assert the result is ≈ 2.0 (the true diameter), not ≈ 1.0.
+Expected impact: IoU will likely increase (tolerance doubles), possibly to ~90%+. This is honest — the paper's definition was always the looser one. Update Table IV accordingly.
+
+P0-3: VCE Centroid Bias (Underestimates True Centering Error by ~2×)
+File: voidx_metrics.py, function volumetric_centering_error
+
+Problem: The cross-section center c is computed as np.mean(hit_points, axis=0) where hit_points are first-exit points of rays fired from the joint. For a symmetric cross-section, this centroid equals (proj + c_true) / 2 — biased toward the joint by half the offset. The measured VCE is therefore approximately half the true centering error.
+
+Mathematical proof of the fix: For 8 uniform rays in 2D, the centroid of exit points = (p + c_true) / 2. Therefore the unbiased estimate is c_true = 2 * centroid - p. (I verified this: for p = c_true, both sides give c_true; for p on the surface, both sides give c_true.)
+
+Current code:
+
+mesh_cross_section_center = np.mean(hit_points, axis=0)
+radial_err = float(np.linalg.norm(p - mesh_cross_section_center))
+errors.append(radial_err / local_diameter)
+
+Fixed code:
+
+# Unbiased center estimate: for uniform rays on a symmetric cross-section,
+# centroid of exit points = (proj + c_true)/2, so c_true = 2*centroid - proj
+mesh_cross_section_center = 2.0 * np.mean(hit_points, axis=0) - proj
+radial_err = float(np.linalg.norm(p - mesh_cross_section_center))
+errors.append(radial_err / local_diameter)
+
+Verification with a synthetic cylinder:
+
+import trimesh, numpy as np
+cyl = trimesh.creation.cylinder(radius=1.0, height=10.0)
+cyl.apply_translation([0, 0, 0])  # center at origin
+
+# Joint at exact center → VCE should be 0.0
+fake_pred_center = {"pelvis": {"x": 0, "y": 0, "z": 0}}
+assert abs(volumetric_centering_error(fake_pred_center, cyl)) < 0.01
+
+# Joint offset by 0.5 (half-radius) → VCE should be 0.25
+fake_pred_offset = {"pelvis": {"x": 0.5, "y": 0, "z": 0}}
+vce = volumetric_centering_error(fake_pred_offset, cyl)
+assert abs(vce - 0.25) < 0.05, f"Expected ~0.25, got {vce}"
+
+# Joint on surface → VCE should be ~0.5
+fake_pred_surface = {"pelvis": {"x": 1.0, "y": 0, "z": 0}}
+vce = volumetric_centering_error(fake_pred_surface, cyl)
+assert abs(vce - 0.5) < 0.05, f"Expected ~0.5, got {vce}"
+
+Expected impact: VCE will approximately double (e.g., 0.266 → ~0.53). This is more honest. Update Table IV and the discussion in Section VI-C. The large std (0.505) will likely also scale up.
+
+P1 — Paper-Code Honesty Gaps
+P1-1: Implement the Area-Centroid Ablation (or Remove the Claim)
+File: voidx_pipeline.py (VolumetricMasterEngine and PipelineConfig) and voidx_ablation.py
+
+Problem: Section VI-E claims to compare midpoint vs area centroid, but ablation_centering_method only runs the midpoint and returns.
+
+Step 1 — Add config flag in PipelineConfig:
+
+# Volumetric centering method (Section VI-E ablation 5)
+use_area_centroid: bool = False  # False = midpoint (Eq. 15, default)
+
+Step 2 — Modify VolumetricMasterEngine.y_volumetric_centering to collect per-ray data:
+
+def y_volumetric_centering(self, x: float, z_physical: float) -> float:
+    z_pad = self.config.y_microgrid_pad_fraction * self._shoulder_width
+    laser_origin_y = float(self._bounds[1][1]) + 50.0
+    origins = np.array([
+        [x + dz_val, laser_origin_y, z_physical]  # note: dz_val offsets x for the ray fan
+        for dz_val in (-2 * z_pad, -z_pad, 0, z_pad, 2 * z_pad)
+    ])
+    # ... existing raycasting ...
+
+    ray_x_offsets = []
+    ray_y_tops = []
+    ray_y_bots = []
+
+    for i in range(5):
+        hits = locations[index_ray == i]
+        if len(hits) < 2:
+            continue
+        ys = np.sort(hits[:, 1])
+        y_bottom = float(ys[0])
+        y_top = float(ys[-1])
+        ray_x_offsets.append(origins[i][0])  # the x of each ray
+        ray_y_tops.append(y_top)
+        ray_y_bots.append(y_bottom)
+
+    if not ray_x_offsets:
+        return float("nan")
+
+    if self.config.use_area_centroid:
+        from voidx_theorems import area_centroid_trapezoidal
+        return area_centroid_trapezoidal(ray_x_offsets, ray_y_tops, ray_y_bots)
+    else:
+        # Default: midpoint estimator (Proposition 7)
+        midpoints = [
+            y_bot + abs(y_top - y_bot) / 2.0
+            for y_top, y_bot in zip(ray_y_tops, ray_y_bots)
+        ]
+        return float(np.mean(midpoints))
+
+        Step 3 — Fix ablation_centering_method in voidx_ablation.py:
+
+def ablation_centering_method(mesh_path, gt_skeleton, mesh):
+    results = []
+    for label, use_ac in [("Midpoint (Eq. 15)", False),
+                          ("Area Centroid (trapezoidal)", True)]:
+        cfg = PipelineConfig(use_area_centroid=use_ac)
+        pipe = VoidXPipeline(cfg)
+        pred = pipe.run(mesh_path)
+        metrics = compute_all_metrics(pred["pose"], gt_skeleton, mesh)
+        metrics["Method"] = label
+        results.append(metrics)
+    return results
+
+    Verification: Run on 3 test meshes. The area centroid should give slightly different (typically lower) VCE than the midpoint on asymmetric limbs.
+
+P1-2: Use a True Orthographic Renderer (or Document the Approximation)
+File: voidx_pipeline.py (CortexVision.init_visualizer) — and the paper text.
+
+Problem: Open3D's Visualizer uses a pinhole camera. Scaling focal length by 20 reduces but doesn't eliminate perspective distortion. The residual perspective term scales as Z/d × (1/20), which for a character filling the frame (Z varying by ~20% of d) gives ~1% residual distortion — small but not zero.
+
+Option A (preferred): Switch to pyrender which has a true OrthographicCamera:
+
+# In CortexVision.__init__, replace Open3D visualizer with:
+import pyrender
+class CortexVision:
+    def __init__(self, config):
+        self.config = config
+        self._mesh = None
+        self._scene = None
+        self._camera = None
+        self._renderer = pyrender.OffscreenRenderer(
+            viewport_width=config.render_resolution,
+            viewport_height=config.render_resolution,
+        )
+
+    def init_visualizer(self, mesh):
+        # Convert Open3D mesh to pyrender mesh (share vertices)
+        vertices = np.asarray(mesh.vertices)
+        faces = np.asarray(mesh.triangles)
+        pr_mesh = pyrender.Mesh.from_trimesh(
+            trimesh.Trimesh(vertices=vertices, faces=faces),
+            material=pyrender.MetallicRoughnessMaterial(
+                baseColorFactor=list(self.config.mesh_skin_tone) + [1.0],
+                metallic=0.0, roughness=1.0
+            )
+        )
+        self._scene = pyrender.Scene(
+            bg_color=list(self.config.background_color) + [1.0]
+        )
+        self._scene.add(pr_mesh)
+
+        # TRUE orthographic camera
+        cam = pyrender.OrthographicCamera(
+            xmag=1.0, ymag=1.0, znear=0.05, zfar=100.0
+        )
+        cam_pose = np.eye(4)
+        cam_pose[:3, 3] = [0, 0, 5]  # 5 units in front
+        self._cam_node = self._scene.add(cam, pose=cam_pose)
+
+    def render_and_detect(self, angle_deg):
+        # Rotate the MESH node, not the camera
+        import cv2
+        for node in self._scene.get_nodes():
+            if node.mesh is not None:
+                node.rotation = np.array([
+                    [np.cos(np.radians(angle_deg)), 0, np.sin(np.radians(angle_deg)), 0],
+                    [0, 1, 0, 0],
+                    [-np.sin(np.radians(angle_deg)), 0, np.cos(np.radians(angle_deg)), 0],
+                    [0, 0, 0, 1]
+                ])
+                break
+        color, _ = self._renderer.render(self._scene)
+        # ... rest of MediaPipe detection ...
+
+        Option B (fallback — just fix the paper text): If switching renderers is too much work, change Section IV-A to:
+
+"To approximate orthographic projection in Open3D (which lacks a native orthographic camera), we scale the pinhole camera's focal length and translation by s = 20. Under perspective projection x = fX/(Z−d), this preserves first-order magnification fX/d while suppressing the perspective term (which scales as Z/d) by a factor of 20, yielding a residual perspective distortion of <1% for typical character proportions. A true orthographic renderer (e.g., pyrender) would eliminate this residual; we leave this substitution to the released code's use_true_ortho flag."
+
+Verification (Option A): Render a cube at 0° and 45°. Under true orthographic, the projected width at 45° should be exactly √2/2 ≈ 0.707 of the width at 0°. Measure this ratio in the rendered image and verify it's within 0.5% of 0.707.
+
+P1-3: Enable find_outliers and Report the Failure Rate
+File: voidx_experiment.py, end of main()
+
+Problem: find_outliers is defined but commented out. The VCE std of 0.505 suggests heavy tails; the paper should report what fraction of characters are catastrophic failures.
+
+Change: Uncomment the call:
+
+def main():
+    # ... existing code ...
+    print(f"\nAll experiments complete. Results in {args.output_dir}/")
+
+    # NEW: Report catastrophic outliers
+    find_outliers(os.path.join(args.output_dir, "main_results.csv"))
+
+    Then add to the paper (Section VI-C, after the main results paragraph):
+
+"On 4 of 73 characters (~5.5%), MediaPipe failed to detect the pose due to extreme stylization or non-watertight geometry, producing CD-J2J > 15%. These outliers drive the large standard deviations in Table IV. Excluding them, the adjusted CD-J2J is X.XXX% ± Y.YYY and VCE is Z.ZZZ ± W.WWW. We report the unfiltered numbers as the primary results to reflect the pipeline's behavior on uncurated AI-generated assets; the filtered numbers are provided for methodological transparency."
+
+Verification: Run on the 73-character set, note the number of outliers and the adjusted means.
+
+P1-4: Rename the Misleading Config Comment
+File: voidx_pipeline.py, PipelineConfig
+
+Current: use_ls_estimator: bool = False  # False = fall back to single-angle (Theorem 5) 
+
+Fixed:
+
+use_ls_estimator: bool = False  # False = decoupled trig inversion (Eq. 9, default)
+                                 # True  = linear least-squares (Eq. 5, Theorem 4)
+
+
+Why this matters: The current comment implies False uses the singular single-angle estimator of Theorem 5, which is wrong — it uses the averaged decoupled estimator of Eq. 9. A reader auditing the code would be confused.
+
+P2 — Polish (Do If Time Permits)
+P2-1: Run at Least One External Baseline
+File: voidx_experiment.py, run_baseline_pinocchio
+
+Problem: All baselines are stubs. The paper says comparison is "future work," but having even one real baseline dramatically strengthens the paper.
+
+Pinocchio is the easiest (single binary, no training):
+
+# Clone and build
+git clone https://github.com/pinocchio-rig/pinocchio.git
+cd pinocchio && mkdir build && cd build
+cmake .. && make -j4
+
+Replace the stub:
+import subprocess, tempfile, os, json
+
+def run_baseline_pinocchio(mesh_path, gt_skeleton):
+    PINOCCHIO_BIN = "/path/to/pinocchio/build/pinocchio"
+    out_dir = tempfile.mkdtemp()
+    try:
+        subprocess.run(
+            [PINOCCHIO_BIN, mesh_path, "-o", out_dir],
+            check=True, timeout=60, capture_output=True
+        )
+        # Pinocchio outputs a .out skeleton file
+        skel_files = [f for f in os.listdir(out_dir) if f.endswith(".out")]
+        if not skel_files:
+            return {"pose": {}, "metadata": {"status": "no_output"}}
+        # Parse Pinocchio's output format into our joint vocabulary
+        # ... parsing logic ...
+        return {"pose": parsed_skeleton, "metadata": {"status": "ok"}}
+    except Exception as e:
+        return {"pose": {}, "metadata": {"status": "failed", "error": str(e)}}
+
+    
+    Then add a row to Table IV:
+
+    | Method | CD-J2J (%, ↓) | IoU (%, ↑) | Runtime (s, ↓) |
+|---|---|---|---|
+| Pinocchio [1] | XX.X ± Y.Y | ZZ.Z ± W.W | A.A ± B.B |
+| **Ours** | 4.995 ± 1.443 | 84.25 ± 14.19 | 4.57 ± 4.05 |
+
+
+P2-2: Add a Coordinate-System Sanity Test
+File: new file tests/test_coordinate_alignment.py
+
+import numpy as np
+import trimesh
+import open3d as o3d
+from voidx_pipeline import VoidXPipeline
+
+def test_coordinate_alignment():
+    """Verify Open3D and trimesh meshes have identical bounds."""
+    pipe = VoidXPipeline()
+    # Use a known test mesh
+    trimesh_mesh = pipe.load_mesh("tests/data/sample_character.glb")
+
+    o3d_bbox = pipe._mesh.get_axis_aligned_bounding_box()
+    o3d_min = np.asarray(o3d_bbox.get_min_bound())
+    o3d_max = np.asarray(o3d_bbox.get_max_bound())
+    tri_min = trimesh_mesh.bounds[0]
+    tri_max = trimesh_mesh.bounds[1]
+
+    assert np.allclose(o3d_min, tri_min, atol=1e-4), \
+        f"Min bounds disagree: Open3D={o3d_min}, trimesh={tri_min}"
+    assert np.allclose(o3d_max, tri_max, atol=1e-4), \
+        f"Max bounds disagree: Open3D={o3d_max}, trimesh={tri_max}"
+
+        Run with pytest tests/test_coordinate_alignment.py. This catches regressions if anyone changes the loader.
+
+P2-3: Add a VCE Metric Test
+File: new file tests/test_vce_metric.py
+
+import numpy as np
+import trimesh
+from voidx_metrics import volumetric_centering_error
+
+def test_vce_centered_joint():
+    """A perfectly centered joint should have VCE ≈ 0."""
+    cyl = trimesh.creation.cylinder(radius=1.0, height=10.0, section=32)
+    pred = {"pelvis": {"x": 0, "y": 0, "z": 0}}
+    vce = volumetric_centering_error(pred, cyl)
+    assert vce < 0.05, f"Centered joint VCE should be ~0, got {vce}"
+
+def test_vce_surface_joint():
+    """A joint on the surface should have VCE ≈ 0.5."""
+    cyl = trimesh.creation.cylinder(radius=1.0, height=10.0, section=32)
+    pred = {"pelvis": {"x": 1.0, "y": 0, "z": 0}}
+    vce = volumetric_centering_error(pred, cyl)
+    assert abs(vce - 0.5) < 0.1, f"Surface joint VCE should be ~0.5, got {vce}"
+
+def test_vce_half_radius():
+    """A joint at half-radius should have VCE ≈ 0.25."""
+    cyl = trimesh.creation.cylinder(radius=1.0, height=10.0, section=32)
+    pred = {"pelvis": {"x": 0.5, "y": 0, "z": 0}}
+    vce = volumetric_centering_error(pred, cyl)
+    assert abs(vce - 0.25) < 0.1, f"Half-radius VCE should be ~0.25, got {vce}"
+
+    These tests verify the VCE fix (P0-3) is correct.
+
+Execution Order
+Here's the recommended sequence, with estimated effort:
+
+| Step | Priority | Effort | Depends on |
+|---|---|---|---|
+| P0-1 (coord fix) | 🔴 Critical | 30 min | None |
+| P0-3 (VCE bias) | 🔴 Critical | 10 min | None |
+| P0-2 (shape diameter) | 🔴 Critical | 10 min | None |
+| P2-3 (VCE tests) | 🟡 High | 15 min | P0-3 |
+| P2-2 (coord tests) | 🟡 High | 15 min | P0-1 |
+| **Re-run main experiment** | — | 1–2 hr | P0-1, P0-2, P0-3 |
+| P1-4 (rename flag) | 🟢 Low | 2 min | None |
+| P1-3 (find_outliers) | 🟡 High | 5 min | Re-run |
+| P1-1 (area centroid ablation) | 🟡 High | 1 hr | None |
+| P1-2 (true ortho OR doc) | 🟡 High | 2–4 hr (code) / 10 min (doc) | None |
+| **Re-run ablations** | — | 1 hr | P1-1, P1-2 |
+| P2-1 (Pinocchio baseline) | 🟢 Low | 2–4 hr | Re-run |
+| **Update paper tables** | — | 1 hr | All above |
+

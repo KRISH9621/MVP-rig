@@ -1,0 +1,20 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- Java ---
+*.class
+*.jar
+*.war
+
+# --- C++ ---
+*.o
+*.out
+*.exe
+*.dll
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
