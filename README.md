@@ -8,7 +8,7 @@
 
 It renders the mesh from 8 near-orthographic viewpoints, detects 2D pose landmarks with MediaPipe Holistic, lifts them to 3D with closed-form trigonometry, then anchors every joint to the *volumetric center* of its limb using raycasting.
 
-```
+
 mesh.obj ──▶ 8 orthographic renders ──▶ MediaPipe 2D landmarks
           ──▶ Phase 1: multi-view 3D lifting (closed-form trig)
           ──▶ Phase 2: raycast volumetric centering
@@ -50,7 +50,6 @@ pip install numpy scipy trimesh open3d mediapipe opencv-python plotly
 
 ## Dataset format
 
-```
 <dataset_root>/
 ├── char001/
 │   ├── mesh.obj          # humanoid mesh (T-pose or A-pose)
@@ -59,7 +58,7 @@ pip install numpy scipy trimesh open3d mediapipe opencv-python plotly
 │   ├── mesh.obj
 │   └── bone_3d.json
 └── ...
-```
+
 
 - **Mesh:** `.obj` (`.glb` also handled). One mesh per subfolder.
 - **Reference skeleton** `bone_3d.json`: flat JSON dict `{"JointName": [x, y, z], ...}`. Mixamo names are mapped automatically.
@@ -150,6 +149,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 Email: nanddynasty5@gmail.com
 GitHub: [@KRISH9621](https://github.com/KRISH9621/MVP-rig)
-```
 
-**Save this as `README.md` in your repo folder, then push.** 📦
