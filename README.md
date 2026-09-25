@@ -1,6 +1,5 @@
 
 
-```markdown
 # MVP-Rig — Multi-View Pose Rigging
 
 [![DOI](https://img.shields.io/badge/Dataset-10.5281%2Fzenodo.22946123-blue)](https://doi.org/10.5281/zenodo.22946123)
@@ -14,9 +13,7 @@ mesh.obj ──▶ 8 orthographic renders ──▶ MediaPipe 2D landmarks
           ──▶ Phase 1: multi-view 3D lifting (closed-form trig)
           ──▶ Phase 2: raycast volumetric centering
           ──▶ 14-joint skeleton (JSON)
-```
 
----
 
 ## Results at a glance
 
