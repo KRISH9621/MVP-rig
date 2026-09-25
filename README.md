@@ -3,7 +3,10 @@
 # MVP-Rig — Multi-View Pose Rigging
 
 [![DOI](https://img.shields.io/badge/Dataset-10.5281%2Fzenodo.22946123-blue)](https://doi.org/10.5281/zenodo.22946123)
+[![arXiv](https://img.shields.io/badge/arXiv-Pending-b31b1b.svg)](https://arxiv.org/)
 
+[Example.webm](https://github.com/user-attachments/assets/e7130336-2682-4382-9a6c-953cdf2357d4
+)
 **MVP-Rig is a deterministic, training-free pipeline that rigs a humanoid mesh with a 14-joint skeleton in ~6 seconds — no training, no datasets, no learned weights.**
 
 It renders the mesh from 8 near-orthographic viewpoints, detects 2D pose landmarks with MediaPipe Holistic, lifts them to 3D with closed-form trigonometry, then anchors every joint to the *volumetric center* of its limb using raycasting.
@@ -71,14 +74,14 @@ pip install numpy scipy trimesh open3d mediapipe opencv-python plotly
 ### 1. Rig a single mesh
 
 ```bash
-python mvp_pipeline.py path/to/char001/mesh.obj
+python voidx_pipeline.py path/to/char001/mesh.obj
 # → skeleton JSON output
 ```
 
 ### 2. Full evaluation suite
 
 ```bash
-python mvp_experiment.py --mesh_dir path/to/dataset --output_dir ./results
+python voidx_experiment.py --mesh_dir path/to/dataset --output_dir ./results
 ```
 
 Runs: theorem verification → main experiment → ablations → runtime profiling.
@@ -118,11 +121,11 @@ None of these limitations is hidden by post-filtering: every character is includ
 ## Repository layout
 
 ```
-mvp_pipeline.py       # Phase 1 + Phase 2 pipeline (the method)
-mvp_theorems.py       # Estimation theory + Monte-Carlo verification
-mvp_metrics.py        # CD-*, IoU, VCE metrics
-mvp_experiment.py     # Full evaluation suite
-mvp_ablation.py       # 5 ablation studies
+voidx_pipeline.py       # Phase 1 + Phase 2 pipeline (the method)
+voidx_theorems.py       # Estimation theory + Monte-Carlo verification
+voidx_metrics.py        # CD-*, IoU, VCE metrics
+voidx_experiment.py     # Full evaluation suite
+voidx_ablation.py       # 5 ablation studies
 view_rig.py           # Interactive 3D QA viewer
 ```
 
@@ -131,15 +134,17 @@ view_rig.py           # Interactive 3D QA viewer
 ## Citation
 
 ```bibtex
-@software{Krishnanand2026mvprig,
+@software{Maurya2026mvprig,
   title={Deterministic Volumetric Auto-Rigging via Multi-View
          Orthographic Lifting of 2D Pose Landmarks},
-  author={Krishnanand and Agostino, Christopher J.},
-  year={2026}
+  author={Maurya, Krishnanand and Agostino, Christopher J.},
+  year={2026},
+  url={https://github.com/KRISH9621/MVP-rig},
+  version={1.0.0}
 }
 ```
 
-## License
+## 📜License
 
 This project is licensed under the [MIT License](LICENSE).
 
