@@ -232,4 +232,4 @@ One last thing worth saying: notice that the Limitations section isn't modesty â
 For questions, collaboration, or feedback, please reach out:
 Email: nanddyasty5@gmail.com
 
-GitHub: [@KRISH9621](https://github.com/KRISH9621/3D_Autorigger_mediapipe)
+GitHub: [@KRISH9621](https://github.com/KRISH9621/MVP-rig)
