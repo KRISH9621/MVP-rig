@@ -2,25 +2,16 @@
 view_rig.py — final visual QA + paper-figure generator.
 
 Usage:
-    python view_rig.py results\\preds\\char2.json
-        (mesh + GT auto-resolved from the prediction's metadata — zero pairing risk)
-
-    python view_rig.py <mesh.obj> <pred.json> [bone_3d.json]
-        (explicit)
-
-    python view_rig.py --batch results\\preds
-        (generate figures for ALL 73 characters)
-
+    python view_rig.py results\preds\char2.json
+    python view_rig.py --batch results\preds
     python view_rig.py --worst 5
-        (generate figures for the 5 worst characters by CD-J2J,
-         reading results/main_results.csv — the paper's failure figures)
+    python view_rig.py --pred-only results\preds\char2.json
+        (mesh + YOUR skeleton only — no reference, no error lines)
 
-Legend:
+Legend (click any item to show/hide the entire group):
     pale blue = mesh | RED dots + GREEN bones = prediction
     BLUE diamonds + blue bones = reference (Mixamo)
-    CYAN x = computed volumetric cross-section centers (VCE reference)
-    ORANGE dashed = pred→reference error connectors
-    Hover any joint: radial centering error + distance to reference
+    CYAN x = cross-section centers | ORANGE dashed = error connectors
 """
 import sys, os, json, csv, argparse
 import numpy as np
@@ -35,9 +26,6 @@ BONE_CONNECTIONS = [
     ("neck", "shoulder_L"), ("neck", "shoulder_R"),
     ("shoulder_L", "elbow_L"), ("shoulder_R", "elbow_R"),
     ("elbow_L", "wrist_L"), ("elbow_R", "wrist_R"),
-    # foot block (auto-skipped while the pipeline outputs 14 joints)
-    ("ankle_L", "heel_L"), ("ankle_L", "foot_index_L"), ("heel_L", "foot_index_L"),
-    ("ankle_R", "heel_R"), ("ankle_R", "foot_index_R"), ("heel_R", "foot_index_R"),
 ]
 MIXAMO_MAP = {
     "Hips": "pelvis", "Neck": "neck",
@@ -49,10 +37,6 @@ MIXAMO_MAP = {
     "LeftFoot": "ankle_L", "RightFoot": "ankle_R",
 }
 CORE = {n for pair in BONE_CONNECTIONS for n in pair} | {"pelvis", "neck"}
-# Junction joints: cross-section centering is NOT DEFINED here (the
-# perpendicular slice cuts the deltoid-torso merge / armpit, not a disc).
-# Suppressed in figures + hover so the viewer never displays a garbage
-# cyan marker at these joints. Same rationale as the paper's VCE scope.
 JUNCTION_JOINTS = {"shoulder_L", "shoulder_R", "hip_L", "hip_R",
                    "pelvis", "neck"}
 
@@ -104,7 +88,6 @@ def seg_dist(p, a, b):
 
 
 def joint_centering(pos, bones, mesh):
-    """Radial centering error for one joint (same math as VCE)."""
     best, best_d = None, np.inf
     for a, b in bones:
         d = seg_dist(pos, a, b)
@@ -145,7 +128,6 @@ def joint_centering(pos, bones, mesh):
 
 
 def load_metrics_row(csv_path, mesh_name):
-    """Pull this character's row from main_results.csv for the title."""
     if not csv_path or not os.path.exists(csv_path):
         return None
     try:
@@ -159,10 +141,9 @@ def load_metrics_row(csv_path, mesh_name):
 
 
 def build_figure(mesh_path, pred_path, gt_path=None, metrics_row=None,
-                 mesh_opacity=0.15, out_dir="."):
+                 mesh_opacity=0.15, out_dir=".", pred_only=False):
     with open(pred_path) as f:
         dna = json.load(f)
-    # auto-resolve mesh from the prediction's own metadata
     if not mesh_path or not os.path.exists(mesh_path):
         mesh_path = dna.get("metadata", {}).get("mesh_path", "")
     if not mesh_path or not os.path.exists(mesh_path):
@@ -182,32 +163,36 @@ def build_figure(mesh_path, pred_path, gt_path=None, metrics_row=None,
              if a in pred and b in pred]
 
     fig = go.Figure()
+
+    # ---- mesh (group: mesh) ----
     fig.add_trace(go.Mesh3d(
         x=mesh.vertices[:, 0], y=mesh.vertices[:, 1], z=mesh.vertices[:, 2],
         i=mesh.faces[:, 0], j=mesh.faces[:, 1], k=mesh.faces[:, 2],
-        opacity=mesh_opacity, color="#7FD4FF", name="Mesh", hoverinfo="skip"))
+        opacity=mesh_opacity, color="#7FD4FF", name="Mesh",
+        hoverinfo="skip", legendgroup="mesh"))
 
-    # ---- reference skeleton (blue) ----
-    if gt:
+    # ---- reference skeleton (group: ref) — SKIPPED in pred-only mode ----
+    if gt and not pred_only:
         gx = [p[0] for p in gt.values()]; gy = [p[1] for p in gt.values()]
         gz = [p[2] for p in gt.values()]
         fig.add_trace(go.Scatter3d(
             x=gx, y=gy, z=gz, mode="markers",
             marker=dict(size=4, color="#1E90FF", symbol="diamond"),
-            name="Reference joints", text=[f"GT {n}" for n in gt],
-            hoverinfo="text"))
+            name="Reference skeleton",
+            text=[f"GT {n}" for n in gt],
+            hoverinfo="text", legendgroup="ref"))
         for a, b in BONE_CONNECTIONS:
             if a in gt and b in gt:
                 fig.add_trace(go.Scatter3d(
                     x=[gt[a][0], gt[b][0]], y=[gt[a][1], gt[b][1]],
                     z=[gt[a][2], gt[b][2]], mode="lines",
                     line=dict(color="#1E90FF", width=4),
-                    name=f"ref: {a}–{b}", hoverinfo="skip",
+                    name=f"ref: {a}-{b}", hoverinfo="skip",
                     legendgroup="ref", showlegend=False))
-    else:
+    elif not pred_only:
         print(f"  NOTE: no reference found at {gt_path}")
 
-    # ---- predicted joints: hover = centering error + GT distance ----
+    # ---- predicted joints + bones (group: pred) ----
     px, py, pz, ptext = [], [], [], []
     cx, cy, cz, ex, ey, ez = [], [], [], [], [], []
     for n, p in pred.items():
@@ -220,7 +205,7 @@ def build_figure(mesh_path, pred_path, gt_path=None, metrics_row=None,
         if err is not None:
             hover += f"<br>radial centering err: {err:.3f} x diameter"
             cx.append(center[0]); cy.append(center[1]); cz.append(center[2])
-        if n in gt:
+        if n in gt and not pred_only:
             d = float(np.linalg.norm(p - gt[n]))
             verdict = "PASS" if d <= 0.05 * diag else "fail"
             hover += (f"<br>dist to ref: {d:.4f} ({100*d/diag:.2f}% diag)"
@@ -234,30 +219,35 @@ def build_figure(mesh_path, pred_path, gt_path=None, metrics_row=None,
         x=px, y=py, z=pz, mode="markers+text",
         text=list(pred.keys()), textposition="top center",
         textfont=dict(size=8), marker=dict(size=5, color="red"),
-        name="Predicted joints", hovertext=ptext, hoverinfo="text"))
+        name="Predicted joints", hovertext=ptext, hoverinfo="text",
+        legendgroup="pred"))
 
-    if cx:
-        fig.add_trace(go.Scatter3d(
-            x=cx, y=cy, z=cz, mode="markers",
-            marker=dict(size=3, color="#00FFFF", symbol="x"),
-            name="Cross-section centers", hoverinfo="skip"))
-    if ex:
-        fig.add_trace(go.Scatter3d(
-            x=ex, y=ey, z=ez, mode="lines",
-            line=dict(color="#FFA500", width=2, dash="dot"),
-            name="Pred→ref error", hoverinfo="skip"))
-
-    # ---- predicted bones: one legend trace per bone (your style) ----
     for a, b in BONE_CONNECTIONS:
         if a in pred and b in pred:
             fig.add_trace(go.Scatter3d(
                 x=[pred[a][0], pred[b][0]], y=[pred[a][1], pred[b][1]],
                 z=[pred[a][2], pred[b][2]], mode="lines",
                 line=dict(color="#32CD32", width=6),
-                name=f"bone: {a}–{b}", hoverinfo="skip"))
+                name=f"bone: {a}-{b}", hoverinfo="skip",
+                legendgroup="pred", showlegend=False))
 
-    # ---- title with this character's metrics (self-documenting figures) ----
-    title = f"Rig QA — {char_name}"
+    # ---- cross-section centers (group: centers) — pred-only skips ----
+    if cx and not pred_only:
+        fig.add_trace(go.Scatter3d(
+            x=cx, y=cy, z=cz, mode="markers",
+            marker=dict(size=3, color="#00FFFF", symbol="x"),
+            name="Cross-section centers", hoverinfo="skip",
+            legendgroup="centers"))
+
+    # ---- error connectors (group: error) — pred-only skips ----
+    if ex and not pred_only:
+        fig.add_trace(go.Scatter3d(
+            x=ex, y=ey, z=ez, mode="lines",
+            line=dict(color="#FFA500", width=2, dash="dot"),
+            name="Pred-ref error", hoverinfo="skip",
+            legendgroup="error"))
+
+    title = f"Rig QA - {char_name}"
     if metrics_row:
         title += (f" | CD-J2J {metrics_row.get('CD-J2J', '?')}%"
                   f" | PCK@5% {metrics_row.get('Precision', '?')}%"
@@ -275,11 +265,13 @@ def build_figure(mesh_path, pred_path, gt_path=None, metrics_row=None,
 
 
 def main():
-    ap = argparse.ArgumentParser(description="VoidX rig QA viewer")
+    ap = argparse.ArgumentParser(description="MVP-Rig QA viewer")
     ap.add_argument("files", nargs="*", help="pred json, or mesh.obj + pred.json [+ gt]")
     ap.add_argument("--batch", metavar="PREDS_DIR", help="render every pred in dir")
     ap.add_argument("--worst", type=int, metavar="N",
                     help="render the N worst characters by CD-J2J")
+    ap.add_argument("--pred-only", action="store_true",
+                    help="mesh + predicted skeleton only (no reference, no error lines)")
     ap.add_argument("--results", default=r".\results", help="results dir")
     ap.add_argument("--out", default=".", help="output dir for HTML files")
     ap.add_argument("--opacity", type=float, default=0.15,
@@ -288,12 +280,10 @@ def main():
     os.makedirs(args.out, exist_ok=True)
     csv_path = os.path.join(args.results, "main_results.csv")
 
-    jobs = []  # (mesh_path, pred_path, gt_path, mesh_name)
+    jobs = []
     if args.worst:
         if not os.path.exists(csv_path):
             print(f"ERROR: {csv_path} not found.")
-            print("  Run from the project folder (the one containing ./results),")
-            print("  or pass --results <path-to-results-dir>.")
             sys.exit(1)
         rows, skipped = [], 0
         with open(csv_path, newline="", encoding="utf-8-sig") as f:
@@ -303,23 +293,13 @@ def main():
                 except (ValueError, KeyError, TypeError):
                     skipped += 1
         if not rows:
-            with open(csv_path, newline="", encoding="utf-8-sig") as f:
-                first = f.readline().strip()
             print(f"ERROR: parsed 0 rows from {csv_path}")
-            print(f"  First line begins: {first[:60]!r}")
-            print("  Expected comma-separated columns 'Mesh' and 'CD-J2J'.")
-            print("  If this file was opened and re-saved in Excel, its "
-                  "delimiter may have changed. Restore the original CSV.")
             sys.exit(1)
-        if skipped:
-            print(f"  note: {skipped} unparseable CSV row(s) skipped")
         rows.sort(reverse=True)
         for _, name in rows[:args.worst]:
             p = os.path.join(args.results, "preds", f"{name}.json")
             if os.path.exists(p):
                 jobs.append((None, p, None, name))
-            else:
-                print(f"  note: no pred file for '{name}' at {p}")
     if args.batch:
         for f in sorted(os.listdir(args.batch)):
             if f.endswith(".json"):
@@ -341,7 +321,8 @@ def main():
         try:
             row = load_metrics_row(csv_path, name)
             out = build_figure(mesh_path, pred_path, gt_path, row,
-                               mesh_opacity=args.opacity, out_dir=args.out)
+                               mesh_opacity=args.opacity,
+                               out_dir=args.out, pred_only=args.pred_only)
             print(f"  OK {out}")
         except Exception as e:
             print(f"  FAIL {pred_path}: {e}")

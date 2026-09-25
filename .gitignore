@@ -42,3 +42,14 @@ test_path.py
 validate_dataset.py
 vce_breakdown.py
 VOIDX_ULTIMATE_DNA.json
+worst/
+special_mesh/
+non_standard/
+figures/
+check_gt_status.py
+finish_steps.py
+
+
+
+
+

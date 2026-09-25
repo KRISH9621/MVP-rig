@@ -1,0 +1,174 @@
+{
+  "table_ii_variance_multipliers": {
+    "single_angle_90": {
+      "N": 1,
+      "theoretical_var_over_sigma2": 1.0,
+      "empirical_pure_var_over_sigma2": 1.0,
+      "ratio_pure_to_CRLB": 1.0,
+      "empirical_with_sideview_bias": 1.25
+    },
+    "two_angles_45_135": {
+      "N": 2,
+      "is_isotropic": true,
+      "theoretical_var_over_sigma2": 1.0,
+      "empirical_pure_var_over_sigma2": 1.0399,
+      "ratio_pure_to_CRLB": 1.0399,
+      "empirical_with_sideview_bias": 1.0066
+    },
+    "four_uniform": {
+      "N": 4,
+      "is_isotropic": true,
+      "theoretical_var_over_sigma2": 0.5,
+      "empirical_pure_var_over_sigma2": 0.5332,
+      "ratio_pure_to_CRLB": 1.0664,
+      "empirical_with_sideview_bias": 0.5058
+    },
+    "eight_uniform": {
+      "N": 8,
+      "is_isotropic": true,
+      "theoretical_var_over_sigma2": 0.25,
+      "empirical_pure_var_over_sigma2": 0.2558,
+      "ratio_pure_to_CRLB": 1.0233,
+      "empirical_with_sideview_bias": 0.2452
+    },
+    "jurisdiction_front_core": {
+      "N": 3,
+      "is_isotropic": false,
+      "theoretical_var_over_sigma2": 1.0,
+      "empirical_pure_var_over_sigma2": 1.0191,
+      "ratio_pure_to_CRLB": 1.0191,
+      "empirical_with_sideview_bias": 0.9747
+    },
+    "jurisdiction_extremity": {
+      "N": 5,
+      "is_isotropic": false,
+      "theoretical_var_over_sigma2": 0.5,
+      "empirical_pure_var_over_sigma2": 0.4861,
+      "ratio_pure_to_CRLB": 0.9722,
+      "empirical_with_sideview_bias": 0.5555
+    }
+  },
+  "table_iv_jurisdiction_observability": {
+    "all_8_unfiltered": {
+      "N": 8,
+      "cond": 1.0000000000000004,
+      "var_Z_over_sigma2": 0.25000000000000006
+    },
+    "right_extremities": {
+      "N": 5,
+      "cond": 1.5,
+      "var_Z_over_sigma2": 0.5
+    },
+    "left_extremities": {
+      "N": 5,
+      "cond": 1.4999999999999998,
+      "var_Z_over_sigma2": 0.4999999999999999
+    },
+    "front_facing_core": {
+      "N": 3,
+      "cond": 1.9999999999999993,
+      "var_Z_over_sigma2": 0.9999999999999998
+    }
+  },
+  "theorem_5_singularity_checks": {
+    "theta_0": {
+      "is_singular": true,
+      "condition_number": Infinity
+    },
+    "theta_45": {
+      "is_singular": false,
+      "condition_number": 2.414213562373095
+    },
+    "theta_90": {
+      "is_singular": false,
+      "condition_number": 1.0
+    },
+    "theta_180": {
+      "is_singular": true,
+      "condition_number": Infinity
+    }
+  },
+  "figure_4_crlb_curve": [
+    {
+      "N": 1,
+      "CRLB_theoretical": 1.0,
+      "empirical_LS_pure": 1.0
+    },
+    {
+      "N": 2,
+      "CRLB_theoretical": 1.0,
+      "empirical_LS_pure": 0.9466
+    },
+    {
+      "N": 3,
+      "CRLB_theoretical": 0.6667,
+      "empirical_LS_pure": 0.67
+    },
+    {
+      "N": 4,
+      "CRLB_theoretical": 0.5,
+      "empirical_LS_pure": 0.4957
+    },
+    {
+      "N": 5,
+      "CRLB_theoretical": 0.4,
+      "empirical_LS_pure": 0.411
+    },
+    {
+      "N": 6,
+      "CRLB_theoretical": 0.3333,
+      "empirical_LS_pure": 0.342
+    },
+    {
+      "N": 7,
+      "CRLB_theoretical": 0.2856,
+      "empirical_LS_pure": 0.2985
+    },
+    {
+      "N": 8,
+      "CRLB_theoretical": 0.25,
+      "empirical_LS_pure": 0.2375
+    },
+    {
+      "N": 9,
+      "CRLB_theoretical": 0.2222,
+      "empirical_LS_pure": 0.2224
+    },
+    {
+      "N": 10,
+      "CRLB_theoretical": 0.2,
+      "empirical_LS_pure": 0.2051
+    },
+    {
+      "N": 11,
+      "CRLB_theoretical": 0.1816,
+      "empirical_LS_pure": 0.1819
+    },
+    {
+      "N": 12,
+      "CRLB_theoretical": 0.1667,
+      "empirical_LS_pure": 0.1714
+    },
+    {
+      "N": 13,
+      "CRLB_theoretical": 0.1538,
+      "empirical_LS_pure": 0.1562
+    },
+    {
+      "N": 14,
+      "CRLB_theoretical": 0.1428,
+      "empirical_LS_pure": 0.134
+    },
+    {
+      "N": 15,
+      "CRLB_theoretical": 0.1333,
+      "empirical_LS_pure": 0.1351
+    },
+    {
+      "N": 16,
+      "CRLB_theoretical": 0.125,
+      "empirical_LS_pure": 0.1227
+    }
+  ],
+  "isotropic_check_eight_uniform": true
+}

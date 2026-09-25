@@ -404,7 +404,7 @@ def run_cross_dataset_experiment(
 def run_ablation_experiment(
     dataset: List[Dict],
     output_dir: str,
-    num_meshes: int = 10,
+    num_meshes: int = 7,
 ) -> Dict:
     """Run all 5 ablation studies across the first `num_meshes` meshes
     with GT, and aggregate mean/std per configuration across meshes.
@@ -575,10 +575,10 @@ def main():
     for method, agg in aggregate.items():
         print(f"  {method}: {agg}")
 
-    # ---- Step 3: Ablations (across 10 meshes with GT) ----
+    # ---- Step 3: Ablations (across 07 meshes with GT) ----
     if not args.skip_ablations and dataset:
         print("\n=== Step 3: Ablation studies (multi-mesh) ===")
-        run_ablation_experiment(dataset, args.output_dir, num_meshes=10)
+        run_ablation_experiment(dataset, args.output_dir, num_meshes=7)
     # ---- Step 4: Runtime ----
     print("\n=== Step 4: Runtime analysis (Table XII) ===")
     run_runtime_experiment(dataset, args.output_dir)

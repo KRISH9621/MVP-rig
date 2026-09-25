@@ -1,162 +1,162 @@
 [
   {
-    "Mesh": "char1",
-    "Runtime_s": 6.1,
-    "Load_s": 0.88,
-    "Phase1_s": 4.854,
-    "Phase2_s": 0.368,
+    "Mesh": "char001",
+    "Runtime_s": 6.87,
+    "Load_s": 1.71,
+    "Phase1_s": 4.564,
+    "Phase2_s": 0.598,
     "NumFaces": 20540
   },
   {
-    "Mesh": "char10",
-    "Runtime_s": 5.89,
-    "Load_s": 0.692,
-    "Phase1_s": 4.362,
-    "Phase2_s": 0.738,
-    "NumFaces": 41532
-  },
-  {
-    "Mesh": "char11",
-    "Runtime_s": 6.74,
-    "Load_s": 0.868,
-    "Phase1_s": 4.884,
-    "Phase2_s": 0.873,
-    "NumFaces": 41171
-  },
-  {
-    "Mesh": "char12",
-    "Runtime_s": 7.04,
-    "Load_s": 0.991,
-    "Phase1_s": 4.939,
-    "Phase2_s": 0.948,
-    "NumFaces": 49678
-  },
-  {
-    "Mesh": "char13",
-    "Runtime_s": 7.27,
-    "Load_s": 1.098,
-    "Phase1_s": 5.102,
-    "Phase2_s": 0.92,
-    "NumFaces": 52126
-  },
-  {
-    "Mesh": "char15",
-    "Runtime_s": 5.82,
-    "Load_s": 0.835,
-    "Phase1_s": 4.242,
-    "Phase2_s": 0.622,
-    "NumFaces": 35979
-  },
-  {
-    "Mesh": "char16",
-    "Runtime_s": 7.2,
-    "Load_s": 1.218,
-    "Phase1_s": 4.898,
-    "Phase2_s": 0.972,
-    "NumFaces": 54366
-  },
-  {
-    "Mesh": "char17",
-    "Runtime_s": 5.09,
-    "Load_s": 0.547,
-    "Phase1_s": 4.1,
-    "Phase2_s": 0.334,
-    "NumFaces": 19450
-  },
-  {
-    "Mesh": "char18",
-    "Runtime_s": 5.55,
-    "Load_s": 0.923,
-    "Phase1_s": 3.653,
-    "Phase2_s": 0.853,
-    "NumFaces": 50187
-  },
-  {
-    "Mesh": "char19",
-    "Runtime_s": 5.07,
-    "Load_s": 0.386,
-    "Phase1_s": 4.327,
-    "Phase2_s": 0.257,
-    "NumFaces": 14235
-  },
-  {
-    "Mesh": "char2",
-    "Runtime_s": 7.53,
-    "Load_s": 1.877,
-    "Phase1_s": 4.398,
-    "Phase2_s": 1.154,
+    "Mesh": "char002",
+    "Runtime_s": 8.79,
+    "Load_s": 2.245,
+    "Phase1_s": 5.2,
+    "Phase2_s": 1.206,
     "NumFaces": 50835
   },
   {
-    "Mesh": "char20",
-    "Runtime_s": 6.24,
-    "Load_s": 1.032,
-    "Phase1_s": 4.6,
-    "Phase2_s": 0.464,
+    "Mesh": "char003",
+    "Runtime_s": 6.84,
+    "Load_s": 0.937,
+    "Phase1_s": 4.684,
+    "Phase2_s": 1.071,
+    "NumFaces": 49180
+  },
+  {
+    "Mesh": "char004",
+    "Runtime_s": 7.11,
+    "Load_s": 1.405,
+    "Phase1_s": 4.719,
+    "Phase2_s": 0.866,
+    "NumFaces": 53738
+  },
+  {
+    "Mesh": "char005",
+    "Runtime_s": 7.04,
+    "Load_s": 1.343,
+    "Phase1_s": 4.614,
+    "Phase2_s": 0.972,
+    "NumFaces": 47869
+  },
+  {
+    "Mesh": "char006",
+    "Runtime_s": 7.12,
+    "Load_s": 0.889,
+    "Phase1_s": 5.132,
+    "Phase2_s": 0.984,
+    "NumFaces": 50763
+  },
+  {
+    "Mesh": "char007",
+    "Runtime_s": 6.61,
+    "Load_s": 1.225,
+    "Phase1_s": 4.399,
+    "Phase2_s": 0.867,
+    "NumFaces": 54668
+  },
+  {
+    "Mesh": "char008",
+    "Runtime_s": 7.03,
+    "Load_s": 1.397,
+    "Phase1_s": 4.819,
+    "Phase2_s": 0.727,
+    "NumFaces": 49796
+  },
+  {
+    "Mesh": "char009",
+    "Runtime_s": 6.7,
+    "Load_s": 0.829,
+    "Phase1_s": 5.017,
+    "Phase2_s": 0.731,
+    "NumFaces": 41532
+  },
+  {
+    "Mesh": "char010",
+    "Runtime_s": 7.15,
+    "Load_s": 1.153,
+    "Phase1_s": 5.209,
+    "Phase2_s": 0.656,
+    "NumFaces": 41171
+  },
+  {
+    "Mesh": "char011",
+    "Runtime_s": 3.97,
+    "Load_s": 0.765,
+    "Phase1_s": 2.79,
+    "Phase2_s": 0.33,
+    "NumFaces": 49678
+  },
+  {
+    "Mesh": "char012",
+    "Runtime_s": 4.03,
+    "Load_s": 0.631,
+    "Phase1_s": 2.856,
+    "Phase2_s": 0.488,
+    "NumFaces": 52126
+  },
+  {
+    "Mesh": "char013",
+    "Runtime_s": 3.35,
+    "Load_s": 0.523,
+    "Phase1_s": 2.478,
+    "Phase2_s": 0.287,
+    "NumFaces": 35979
+  },
+  {
+    "Mesh": "char014",
+    "Runtime_s": 4.76,
+    "Load_s": 0.736,
+    "Phase1_s": 3.294,
+    "Phase2_s": 0.68,
+    "NumFaces": 54366
+  },
+  {
+    "Mesh": "char015",
+    "Runtime_s": 3.19,
+    "Load_s": 0.404,
+    "Phase1_s": 2.487,
+    "Phase2_s": 0.216,
+    "NumFaces": 19450
+  },
+  {
+    "Mesh": "char016",
+    "Runtime_s": 3.92,
+    "Load_s": 0.6,
+    "Phase1_s": 2.755,
+    "Phase2_s": 0.501,
+    "NumFaces": 50187
+  },
+  {
+    "Mesh": "char017",
+    "Runtime_s": 3.01,
+    "Load_s": 0.315,
+    "Phase1_s": 2.485,
+    "Phase2_s": 0.16,
+    "NumFaces": 14235
+  },
+  {
+    "Mesh": "char018",
+    "Runtime_s": 3.95,
+    "Load_s": 0.56,
+    "Phase1_s": 2.994,
+    "Phase2_s": 0.317,
     "NumFaces": 31696
   },
   {
-    "Mesh": "char21",
-    "Runtime_s": 5.74,
-    "Load_s": 0.998,
-    "Phase1_s": 3.803,
-    "Phase2_s": 0.836,
+    "Mesh": "char019",
+    "Runtime_s": 7.2,
+    "Load_s": 0.685,
+    "Phase1_s": 5.47,
+    "Phase2_s": 0.991,
     "NumFaces": 57914
   },
   {
-    "Mesh": "char22",
-    "Runtime_s": 6.53,
-    "Load_s": 0.636,
-    "Phase1_s": 4.998,
-    "Phase2_s": 0.817,
-    "NumFaces": 52551
-  },
-  {
-    "Mesh": "char23",
-    "Runtime_s": 5.36,
-    "Load_s": 0.93,
-    "Phase1_s": 3.56,
-    "Phase2_s": 0.768,
-    "NumFaces": 48229
-  },
-  {
-    "Mesh": "char25",
-    "Runtime_s": 6.07,
-    "Load_s": 0.646,
+    "Mesh": "char020",
+    "Runtime_s": 6.62,
+    "Load_s": 0.903,
     "Phase1_s": 4.69,
-    "Phase2_s": 0.613,
-    "NumFaces": 37668
-  },
-  {
-    "Mesh": "char26",
-    "Runtime_s": 6.31,
-    "Load_s": 1.243,
-    "Phase1_s": 4.319,
-    "Phase2_s": 0.644,
-    "NumFaces": 54938
-  },
-  {
-    "Mesh": "char27",
-    "Runtime_s": 5.16,
-    "Load_s": 0.745,
-    "Phase1_s": 3.896,
-    "Phase2_s": 0.433,
-    "NumFaces": 42818
-  },
-  {
-    "Mesh": "char28",
-    "Runtime_s": 6.5,
-    "Load_s": 1.013,
-    "Phase1_s": 4.621,
-    "Phase2_s": 0.8,
-    "NumFaces": 53460
-  },
-  {
-    "Mesh": "char29",
-    "Runtime_s": 5.46,
-    "Load_s": 0.535,
-    "Phase1_s": 4.344,
-    "Phase2_s": 0.487,
-    "NumFaces": 28106
+    "Phase2_s": 0.926,
+    "NumFaces": 52551
   }
 ]
